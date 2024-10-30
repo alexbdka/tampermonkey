@@ -45,7 +45,7 @@
         const encodedUrl = encodeURIComponent(downloadUrl);
         // Construct the mod manager link with the game ID and encoded URL
         const modManagerLink = 'modl://' + gameId + '/?url=' + encodedUrl + ".7z";
-        console.log("[INFO] Link : ", modManagerLink); // Log the constructed link
+        console.log("[INFO] mod manager link : ", modManagerLink); // Log the constructed link
 
         // Create a fixed button container for the download button
         const buttonContainer = createFixedButtonContainer(modManagerLink);
@@ -72,7 +72,7 @@
         button.innerHTML = `
             <span style="display: flex; align-items: center; font-family: 'Brush Script MT', cursive;">
                 <img src="https://i.ibb.co/55r0z7m/confrerie-des-traducteurs-small.png" alt="Confrérie" style="vertical-align: middle; width: 40px; height: 40px; margin-right: 10px;">
-                Télécharger<br>Traduction
+                Télécharger<br>avec<br>Mod Organizer 2
             </span>
         `;
         // Style the button
