@@ -1,48 +1,81 @@
 // ==UserScript==
 // @name         Confrérie des Traducteurs - NexusMods Redirector
 // @namespace    https://discord.gg/sJDzeCZCa3
-// @version      1.1
-// @description  Finds French translations of NexusMods mods on Confrérie des Traducteurs.
+// @version      1.2.1
+// @description  Find French translations of NexusMods mods on Confrérie des Traducteurs
 // @author       chunchunmaru (alexbdka)
 // @icon         https://i.ibb.co/55r0z7m/confrerie-des-traducteurs-small.png
-// @match        https://www.nexusmods.com/skyrim/*
 // @match        https://www.nexusmods.com/skyrimspecialedition/*
+// @match        https://www.nexusmods.com/skyrim/*
+// @match        https://www.nexusmods.com/oblivion/*
+// @match        https://www.nexusmods.com/morrowind/*
 // @match        https://www.nexusmods.com/fallout4/*
+// @match        https://www.nexusmods.com/newvegas/*
+// @match        https://www.nexusmods.com/fallout3/*
 // @grant        GM_xmlhttpRequest
 // @connect      www.confrerie-des-traducteurs.fr
 // ==/UserScript==
 
 (function() {
     'use strict';
+
+    // Extract game category from URL
     const gameCategory = window.location.pathname.split('/')[1];
+    
+    // Determine search base URL and game parameters based on game category
     const searchBaseUrl = getSearchBaseUrl(gameCategory);
     const gameParams = getGameParams(gameCategory);
 
+    // Extract mod title and author
     const modTitle = document.querySelector("#pagetitle > h1").innerText.trim();
     const modAuthor = document.querySelector("#fileinfo > div:nth-child(5) > a").innerText.trim();
 
+    // Create and append button container
     const buttonContainer = createButtonContainer();
     document.body.appendChild(buttonContainer);
 
+    // Add click event listener to search button
     buttonContainer.querySelector('button').addEventListener('click', () => {
-        buttonContainer.querySelector('button').disabled = true;
-        searchModOnConfrerie(modTitle, modAuthor, buttonContainer.querySelector('button'));
+        const button = buttonContainer.querySelector('button');
+        button.disabled = true;
+        searchModOnConfrerie(modTitle, modAuthor, button);
     });
 
+    /**
+     * Get the base search URL for the specific game
+     * @param {string} gameCategory - The game category from the URL
+     * @returns {string} Search base URL for the game
+     */
     function getSearchBaseUrl(gameCategory) {
-        return gameCategory.includes("skyrimspecialedition")
-            ? "https://www.confrerie-des-traducteurs.fr/skyrim/recherche/simple"
-        : `https://www.confrerie-des-traducteurs.fr/${gameCategory}/recherche/simple`;
+        const gameUrlMap = {
+            'skyrimspecialedition': "https://www.confrerie-des-traducteurs.fr/skyrim/recherche/simple",
+            'skyrim': "https://www.confrerie-des-traducteurs.fr/skyrim/recherche/simple",
+            'oblivion': "https://www.confrerie-des-traducteurs.fr/oblivion/recherche/simple",
+            'morrowind': "https://www.confrerie-des-traducteurs.fr/morrowind/recherche/simple",
+            'fallout4': "https://www.confrerie-des-traducteurs.fr/fallout4/recherche/simple",
+            'newvegas': "https://www.confrerie-des-traducteurs.fr/fallout-new-vegas/recherche/simple",
+            'fallout3': "https://www.confrerie-des-traducteurs.fr/fallout3/recherche/simple"
+        };
+        return gameUrlMap[gameCategory] || gameUrlMap['skyrim'];
     }
 
+    /**
+     * Get game-specific search parameters
+     * @param {string} gameCategory - The game category from the URL
+     * @returns {Object} Game-specific search parameters
+     */
     function getGameParams(gameCategory) {
-        return gameCategory.includes("fallout4")
-            ? { fallout4: 1 }
-        : gameCategory.includes("skyrimspecialedition")
+        return gameCategory.includes("skyrimspecialedition")
             ? { skyrim: 0, skyrimSE: 1 }
-        : { skyrim: 1, skyrimSE: 0 };
+            : gameCategory.includes("skyrim")
+            ? { skyrim: 1, skyrimSE: 0 }
+            : {};
     }
 
+    /**
+     * Create the button container for searching translations
+     * @returns {HTMLElement} Button container element
+     */
     function createButtonContainer() {
         const container = document.createElement('div');
         container.style.position = 'fixed';
@@ -52,11 +85,11 @@
 
         const button = document.createElement('button');
         button.innerHTML = `
-        <span style="display: flex; align-items: center; font-family: 'Brush Script MT', cursive; color: #4b3929;">
-            <img src="https://i.ibb.co/55r0z7m/confrerie-des-traducteurs-small.png" alt="Confrérie" style="vertical-align: middle; width: 40px; height: 40px; margin-right: 10px;">
-            Traduction<br>Française
-        </span>
-    `;
+            <span style="display: flex; align-items: center; font-family: 'Brush Script MT', cursive; color: #4b3929;">
+                <img src="https://i.ibb.co/55r0z7m/confrerie-des-traducteurs-small.png" alt="Confrérie" style="vertical-align: middle; width: 40px; height: 40px; margin-right: 10px;">
+                Traduction<br>Française
+            </span>
+        `;
         button.style.margin = '5px';
         button.style.padding = '15px 20px';
         button.style.backgroundColor = '#e6ccaa';
@@ -71,6 +104,12 @@
         return container;
     }
 
+    /**
+     * Search for mod translation on Confrérie des Traducteurs
+     * @param {string} modTitle - Title of the mod
+     * @param {string} modAuthor - Author of the mod
+     * @param {HTMLButtonElement} button - Button to update after search
+     */
     function searchModOnConfrerie(modTitle, modAuthor, button) {
         const params = new URLSearchParams({
             term: modTitle.replace(/\s+/g, "_"),
@@ -95,8 +134,6 @@
                     handleSearchResponse(response.responseText, modTitle, modAuthor, button);
                 } else {
                     console.error(`[ERROR] Search failed with status: ${response.status}`);
-                    console.error(`[ERROR] Search URL: ${searchBaseUrl}`);
-                    console.error(`[ERROR] Search params: ${params.toString()}`);
                     updateButtonState(button, 'error');
                 }
             },
@@ -107,6 +144,13 @@
         });
     }
 
+    /**
+     * Handle search response from Confrérie des Traducteurs
+     * @param {string} responseText - Response from the search request
+     * @param {string} modTitle - Title of the mod
+     * @param {string} modAuthor - Author of the mod
+     * @param {HTMLButtonElement} button - Button to update after search
+     */
     function handleSearchResponse(responseText, modTitle, modAuthor, button) {
         const data = JSON.parse(responseText);
         const possibleMods = data.Entries.map(entry => ({ name: entry.OriginalName, link: entry.Link }));
@@ -121,6 +165,12 @@
         }
     }
 
+    /**
+     * Search for translation by mod author
+     * @param {string} modAuthor - Author of the mod
+     * @param {string} modTitle - Title of the mod
+     * @param {HTMLButtonElement} button - Button to update after search
+     */
     function searchByAuthor(modAuthor, modTitle, button) {
         const params = new URLSearchParams({
             term: modAuthor,
@@ -165,8 +215,13 @@
         });
     }
 
+    /**
+     * Find the best match for a mod title
+     * @param {string} modTitle - Title of the mod
+     * @param {Array} possibleMods - List of possible matching mods
+     * @returns {Object|null} Best matching mod or null
+     */
     function findBestMatch(modTitle, possibleMods) {
-        console.log("[DEBUG] possibleMods : ", possibleMods);
         let bestMatch = null;
         let lowestRatio = 1;
 
@@ -182,6 +237,12 @@
         return bestMatch;
     }
 
+    /**
+     * Calculate Levenshtein distance between two strings
+     * @param {string} a - First string
+     * @param {string} b - Second string
+     * @returns {number} Levenshtein distance
+     */
     function levenshteinDistance(a, b) {
         const matrix = Array.from({ length: b.length + 1 }, (_, i) => [i]);
         for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
@@ -190,20 +251,25 @@
             for (let j = 1; j <= a.length; j++) {
                 matrix[i][j] = b[i - 1] === a[j - 1]
                     ? matrix[i - 1][j - 1]
-                : Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
+                    : Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
             }
         }
 
         return matrix[b.length][a.length];
     }
 
+    /**
+     * Update the button state based on search results
+     * @param {HTMLButtonElement} button - Button to update
+     * @param {string} state - State of the search ('success', 'not-found', 'error')
+     */
     function updateButtonState(button, state) {
         button.disabled = false;
         button.style.backgroundColor = state === 'success' ? '#5cb85c'
-        : state === 'not-found' ? '#f0ad4e'
-        : '#d9534f';
+            : state === 'not-found' ? '#f0ad4e'
+            : '#d9534f';
         button.innerHTML = state === 'success' ? 'Traduction trouvée !'
-        : state === 'not-found' ? 'Pas de traduction'
-        : 'Erreur';
+            : state === 'not-found' ? 'Pas de traduction'
+            : 'Erreur';
     }
 })();
