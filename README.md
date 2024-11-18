@@ -7,7 +7,7 @@ Each script is designed to enhance your experience on specific websites or appli
 
 ## 📂 Scripts Overview
 
-### [Confrérie des Traducteurs - NexusMods Redirector](./Confrérie-des-Traducteurs-NexusMods-Redirector)
+### [Confrérie des Traducteurs - NexusMods Redirector](./scripts/Confrérie-des-Traducteurs-NexusMods-Redirector)
 🔗 **Purpose**: Automatically redirects you to the French translations of NexusMods mods available on [La Confrérie des Traducteurs](https://www.confrerie-des-traducteurs.fr).  
 ✔️ **Compatible Games**:  
 - Skyrim Special Edition  
@@ -18,11 +18,11 @@ Each script is designed to enhance your experience on specific websites or appli
 - Fallout: New Vegas *(limited support)*  
 - Fallout 3 *(limited support)*  
 
-💾 **Installation**: Follow the instructions in the script's [README](./Confrérie-des-Traducteurs-NexusMods-Redirector/README.md).
+💾 **Installation**: Follow the instructions in the script's [README](./scripts/Confrérie-des-Traducteurs-NexusMods-Redirector/README.md).
 
 ---
 
-### [Confrérie des Traducteurs - MO2 Handler](./Confrérie-des-Traducteurs-MO2-Handler)
+### [Confrérie des Traducteurs - MO2 Handler](./scripts/Confrérie-des-Traducteurs-MO2-Handler)
 🔗 **Purpose**: Adds a button to download translations from La Confrérie directly into Mod Organizer 2 (MO2) using `modl://` links.  
 ✔️ **Compatible Games**:  
 - Skyrim Special Edition  
@@ -33,7 +33,7 @@ Each script is designed to enhance your experience on specific websites or appli
 - Fallout: New Vegas  
 - Fallout 3  
 
-💾 **Installation**: Detailed setup instructions are available in the script's [README](./Confrérie-des-Traducteurs-MO2-Handler/README.md).
+💾 **Installation**: Detailed setup instructions are available in the script's [README](./scripts/Confrérie-des-Traducteurs-MO2-Handler/README.md).
 
 ---
 
